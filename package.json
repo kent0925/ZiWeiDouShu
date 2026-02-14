@@ -2,6 +2,7 @@
     "name": "zwds-api",
     "version": "1.0.0",
     "description": "紫微斗數算命應用後端 API",
+    "type": "module",
     "private": true,
     "dependencies": {
         "@vercel/kv": "^1.0.0"
