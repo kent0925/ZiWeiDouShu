@@ -5,6 +5,7 @@
     "type": "module",
     "private": true,
     "dependencies": {
-        "@vercel/kv": "^1.0.0"
+        "@vercel/kv": "^1.0.0",
+        "ioredis": "^5.3.2"
     }
 }
