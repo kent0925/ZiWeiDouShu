@@ -1908,7 +1908,8 @@
                 let horoscope;
                 const pad = n => n.toString().padStart(2, '0');
                 try {
-                    horoscope = astro.horoscope(`${year}-${pad(1)}-${pad(1)}`, 0);
+                    // 使用午時 (6) 避免早子時日期邊界問題
+                    horoscope = astro.horoscope(`${year}-${pad(1)}-${pad(1)}`, 6);
                 } catch (err) {
                     console.warn('流年計算失敗:', err);
                     container.innerHTML = `<div class="glass" style="padding:16px"><p style="color:var(--text-secondary);font-size:0.85rem">無法計算 ${year} 年流年運勢，可能是日期超出範圍。</p></div>`;
@@ -2021,7 +2022,8 @@
 
             try {
                 const pad = n => n.toString().padStart(2, '0');
-                const horoscope = astro.horoscope(`${year}-${pad(month)}-${pad(1)}`, 0);
+                // 使用午時 (6)
+                const horoscope = astro.horoscope(`${year}-${pad(month)}-${pad(1)}`, 6);
                 const m = horoscope.monthly;
 
                 let html = `<div class="glass" style="padding:16px;margin-bottom:12px">
