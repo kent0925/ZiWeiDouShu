@@ -1912,8 +1912,26 @@
                     horoscope = astro.horoscope(`${year}-${pad(1)}-${pad(1)}`, 6);
                 } catch (err) {
                     console.warn('流年計算失敗:', err);
-                    container.innerHTML = `<div class="glass" style="padding:16px"><p style="color:var(--text-secondary);font-size:0.85rem">無法計算 ${year} 年流年運勢，可能是日期超出範圍。</p></div>`;
-                    return;
+                    // Fallback: Manually find the Yearly Palace based on Earthly Branch
+                    // (Year - 4) % 12 -> 0=Zi, 1=Chou...
+                    const branches = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+                    const idx = (year - 4) % 12;
+                    const targetBranch = branches[idx];
+
+                    if (astro.palaces) {
+                        const fallbackPalace = astro.palaces.find(p => p.earthlyBranch === targetBranch);
+                        if (fallbackPalace) {
+                            horoscope = { yearly: fallbackPalace };
+                            container.innerHTML = `<div class="glass" style="padding:12px;margin-bottom:12px;border:1px solid #e74c3c;background:rgba(231,76,60,0.1)">
+                                <div style="color:#e74c3c;font-size:0.85rem">⚠️ 完整流年運勢計算失敗，僅顯示本宮星曜分析。</div>
+                            </div>`;
+                        }
+                    }
+
+                    if (!horoscope) {
+                        container.innerHTML = `<div class="glass" style="padding:16px"><p style="color:var(--text-secondary);font-size:0.85rem">無法計算 ${year} 年流年運勢。</p></div>`;
+                        return;
+                    }
                 }
 
                 if (!horoscope) {
