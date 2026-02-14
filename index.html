@@ -831,177 +831,205 @@
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="birth-longitude">出生地經度 (Longitude)</label>
-                    <div style="display:flex;gap:8px;align-items:center">
-                        <input type="number" id="birth-longitude" class="form-input" value="121.5" step="0.01"
-                            min="-180" max="180" style="flex:1">
-                        <span style="font-size:0.75rem;color:var(--ink-muted);white-space:nowrap">°E</span>
+                <div class="form-group"
+                    style="margin-top:16px;background:rgba(0,0,0,0.02);padding:12px;border-radius:8px;border:1px solid rgba(0,0,0,0.05)">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                        <label for="birth-lotitude-select" style="margin:0;font-weight:700;color:var(--ink)">出生地點
+                            (校正真太陽時)</label>
+                        <div class="toggle-switch active" onclick="toggleTST()">
+                            <div class="toggle-knob active" id="tst-toggle"></div>
+                        </div>
                     </div>
-                    <p style="font-size:0.72rem;color:var(--ink-faint);margin-top:4px;line-height:1.5">
-                        台北 121.5° ｜ 台中 120.7° ｜ 高雄 120.3° ｜ 北京 116.4° ｜ 上海 121.5° ｜ 香港 114.2°
-                    </p>
-                </div>
-
-                <div class="form-group">
-                    <div class="toggle-row">
-                        <div class="toggle-switch active" id="tst-toggle" onclick="toggleTST()"></div>
-                        <span style="font-size:0.85rem" id="tst-label">✅ 啟用真太陽時校正</span>
+                    <div style="font-size:0.8rem;color:var(--ink-muted);margin-bottom:8px" id="tst-label">✅ 啟用真太陽時校正
                     </div>
-                    <p style="font-size:0.72rem;color:var(--ink-faint);margin-top:4px;line-height:1.5">
-                        真太陽時 = 鐘錶時間 + 經度修正 + 均時差，為天文學精密排盤標準
-                    </p>
-                </div>
 
-                <button class="btn-gold" onclick="generateChart()" id="btn-generate">
-                    <span style="display:flex;align-items:center;justify-content:center;gap:8px">
-                        <i data-lucide="compass" style="width:20px;height:20px"></i> 開始排盤
-                    </span>
-                </button>
-            </div>
-        </div>
+                    <select id="birth-lotitude-select" class="form-select" onchange="checkCustomLocation()">
+                        <option value="121.56">台北市 (121.56°E)</option>
+                        <option value="121.74">基隆市 (121.74°E)</option>
+                        <option value="121.47">新北市 (121.47°E)</option>
+                        <option value="121.30">桃園市 (121.30°E)</option>
+                        <option value="120.96">新竹市/縣 (120.96°E)</option>
+                        <option value="120.82">苗栗縣 (120.82°E)</option>
+                        <option value="120.67">台中市 (120.67°E)</option>
+                        <option value="120.54">彰化縣 (120.54°E)</option>
+                        <option value="120.68">南投縣 (120.68°E)</option>
+                        <option value="120.53">雲林縣 (120.53°E)</option>
+                        <option value="120.45">嘉義市/縣 (120.45°E)</option>
+                        <option value="120.20">台南市 (120.20°E)</option>
+                        <option value="120.30">高雄市 (120.30°E)</option>
+                        <option value="120.48">屏東縣 (120.48°E)</option>
+                        <option value="121.77">宜蘭縣 (121.77°E)</option>
+                        <option value="121.60">花蓮縣 (121.60°E)</option>
+                        <option value="121.14">台東縣 (121.14°E)</option>
+                        <option value="119.56">澎湖縣 (119.56°E)</option>
+                        <option value="118.32">金門縣 (118.32°E)</option>
+                        <option value="119.94">連江縣 (119.94°E)</option>
+                        <option value="custom">📍 自行輸入經度...</option>
+                    </select>
 
-        <!-- ========== 命盤結果 ========== -->
-        <div id="view-result" class="view">
-            <div id="chart-summary-section" class="glass" style="padding:16px;margin-bottom:14px">
-                <h3 style="font-family:var(--font-serif);font-size:1rem;color:var(--gold);margin-bottom:12px;text-align:center"
-                    id="result-title">命盤結果</h3>
-                <div class="chart-summary" id="chart-summary"></div>
-            </div>
-
-            <!-- 進階功能 Tabs -->
-            <div class="feature-tabs" id="feature-tabs">
-                <div class="feature-tab active" data-tab="chart" onclick="switchTab('chart')">命盤總覽</div>
-                <div class="feature-tab" data-tab="explain" onclick="switchTab('explain')">口語解說</div>
-                <div class="feature-tab" data-tab="decade" onclick="switchTab('decade')">大限分析</div>
-                <div class="feature-tab" data-tab="yearly" onclick="switchTab('yearly')">流年運勢</div>
-                <div class="feature-tab" data-tab="monthly" onclick="switchTab('monthly')">流月細看</div>
-                <div class="feature-tab" data-tab="relations" onclick="switchTab('relations')">三方四正</div>
-            </div>
-
-            <!-- Tab: 命盤 -->
-            <div id="tab-chart" class="tab-content">
-                <div class="chart-grid" id="chart-grid"></div>
-            </div>
-
-            <!-- Tab: 口語解說 -->
-            <div id="tab-explain" class="tab-content hidden">
-                <div class="explain-section" id="explain-content"></div>
-            </div>
-
-            <!-- Tab: 大限 -->
-            <div id="tab-decade" class="tab-content hidden">
-                <div id="decade-content"></div>
-            </div>
-
-            <!-- Tab: 流年 -->
-            <div id="tab-yearly" class="tab-content hidden">
-                <div class="form-group" style="margin:12px 0">
-                    <label class="form-label">選擇流年年份</label>
-                    <select id="yearly-select" class="form-select" onchange="renderYearly()"></select>
-                </div>
-                <div id="yearly-content"></div>
-            </div>
-
-            <!-- Tab: 流月 -->
-            <div id="tab-monthly" class="tab-content hidden">
-                <div style="display:flex;gap:8px;margin:12px 0">
-                    <div class="form-group" style="flex:1">
-                        <label class="form-label">年份</label>
-                        <select id="monthly-year" class="form-select" onchange="updateMonthlyOptions()"></select>
-                    </div>
-                    <div class="form-group" style="flex:1">
-                        <label class="form-label">月份</label>
-                        <select id="monthly-month" class="form-select" onchange="renderMonthly()">
-                            <option value="1">正月</option>
-                            <option value="2">二月</option>
-                            <option value="3">三月</option>
-                            <option value="4">四月</option>
-                            <option value="5">五月</option>
-                            <option value="6">六月</option>
-                            <option value="7">七月</option>
-                            <option value="8">八月</option>
-                            <option value="9">九月</option>
-                            <option value="10">十月</option>
-                            <option value="11">冬月</option>
-                            <option value="12">臘月</option>
-                        </select>
+                    <div id="custom-longitude-group" style="display:none;margin-top:8px">
+                        <input type="number" id="birth-longitude" class="form-input" placeholder="輸入經度 (例如 121.5)"
+                            step="0.01" value="121.5" min="0" max="180">
+                        <div style="font-size:0.75rem;color:var(--text-secondary);margin-top:4px">台灣經度約 120-122 度，每差 1
+                            度影響約 4 分鐘。</div>
                     </div>
                 </div>
-                <div id="monthly-content"></div>
-            </div>
-
-            <!-- Tab: 三方四正 -->
-            <div id="tab-relations" class="tab-content hidden">
-                <div class="form-group" style="margin:12px 0">
-                    <label class="form-label">選擇宮位查看三方四正</label>
-                    <select id="relations-palace" class="form-select" onchange="renderRelations()"></select>
-                </div>
-                <div id="relations-content"></div>
-            </div>
-
-            <div style="display:flex;gap:10px;margin-top:16px">
-                <button class="btn-secondary" style="flex:1" onclick="saveChart()">
-                    <span style="display:flex;align-items:center;justify-content:center;gap:6px">
-                        <i data-lucide="save" style="width:16px;height:16px"></i> 儲存紀錄
-                    </span>
-                </button>
-                <button class="btn-secondary" style="flex:1" onclick="showView('view-form')">
-                    <span style="display:flex;align-items:center;justify-content:center;gap:6px">
-                        <i data-lucide="rotate-ccw" style="width:16px;height:16px"></i> 重新排盤
-                    </span>
-                </button>
-            </div>
-        </div>
-
-        <!-- ========== 歷史紀錄 ========== -->
-        <div id="view-history" class="view">
-            <div class="glass" style="padding:20px">
-                <h2
-                    style="font-family:var(--font-serif);font-size:1.1rem;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:8px">
-                    <i data-lucide="scroll-text" style="width:20px;height:20px"></i> 歷史紀錄
-                </h2>
-                <div id="history-list">
-                    <p style="text-align:center;color:var(--text-secondary);font-size:0.85rem;padding:30px 0">尚無紀錄</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========== 關於 ========== -->
-        <div id="view-about" class="view">
-            <div class="glass explain-card">
-                <h4>🌟 什麼是紫微斗數？</h4>
-                <p>簡單來說，紫微斗數就像是你出生那一刻的「星空快照」。古人觀察天上星辰的排列，發展出這套命理系統。
-                    <strong>它用十二個宮位來描述你人生的各個面向</strong>，像是你的個性、事業、感情、財運等等。每個宮位裡面會有不同的星星（我們叫「星曜」），這些星星的組合就決定了那個面向的特質。
+                <p style="font-size:0.72rem;color:var(--ink-faint);margin-top:4px;line-height:1.5">
+                    台北 121.5° ｜ 台中 120.7° ｜ 高雄 120.3° ｜ 北京 116.4° ｜ 上海 121.5° ｜ 香港 114.2°
                 </p>
             </div>
-            <div class="glass explain-card">
-                <h4>📐 十二宮位是什麼？</h4>
-                <p>你可以把十二宮想像成人生的十二個舞台：<br>
-                    <strong>命宮</strong>＝你這個人的核心個性<br>
-                    <strong>兄弟宮</strong>＝跟兄弟姐妹、朋友的關係<br>
-                    <strong>夫妻宮</strong>＝感情跟婚姻狀況<br>
-                    <strong>子女宮</strong>＝跟小孩的緣分、桃花<br>
-                    <strong>財帛宮</strong>＝賺錢的方式跟財運<br>
-                    <strong>疾厄宮</strong>＝身體健康<br>
-                    <strong>遷移宮</strong>＝出外運、人際關係<br>
-                    <strong>交友宮</strong>＝朋友跟合作夥伴<br>
-                    <strong>官祿宮</strong>＝工作跟事業<br>
-                    <strong>田宅宮</strong>＝家庭跟房產<br>
-                    <strong>福德宮</strong>＝精神層面、有沒有福氣<br>
-                    <strong>父母宮</strong>＝跟長輩的關係、讀書運
-                </p>
+
+
+
+            <button class="btn-gold" onclick="generateChart()" id="btn-generate">
+                <span style="display:flex;align-items:center;justify-content:center;gap:8px">
+                    <i data-lucide="compass" style="width:20px;height:20px"></i> 開始排盤
+                </span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ========== 命盤結果 ========== -->
+    <div id="view-result" class="view">
+        <div id="chart-summary-section" class="glass" style="padding:16px;margin-bottom:14px">
+            <h3 style="font-family:var(--font-serif);font-size:1rem;color:var(--gold);margin-bottom:12px;text-align:center"
+                id="result-title">命盤結果</h3>
+            <div class="chart-summary" id="chart-summary"></div>
+        </div>
+
+        <!-- 進階功能 Tabs -->
+        <div class="feature-tabs" id="feature-tabs">
+            <div class="feature-tab active" data-tab="chart" onclick="switchTab('chart')">命盤總覽</div>
+            <div class="feature-tab" data-tab="explain" onclick="switchTab('explain')">口語解說</div>
+            <div class="feature-tab" data-tab="decade" onclick="switchTab('decade')">大限分析</div>
+            <div class="feature-tab" data-tab="yearly" onclick="switchTab('yearly')">流年運勢</div>
+            <div class="feature-tab" data-tab="monthly" onclick="switchTab('monthly')">流月細看</div>
+            <div class="feature-tab" data-tab="relations" onclick="switchTab('relations')">三方四正</div>
+        </div>
+
+        <!-- Tab: 命盤 -->
+        <div id="tab-chart" class="tab-content">
+            <div class="chart-grid" id="chart-grid"></div>
+        </div>
+
+        <!-- Tab: 口語解說 -->
+        <div id="tab-explain" class="tab-content hidden">
+            <div class="explain-section" id="explain-content"></div>
+        </div>
+
+        <!-- Tab: 大限 -->
+        <div id="tab-decade" class="tab-content hidden">
+            <div id="decade-content"></div>
+        </div>
+
+        <!-- Tab: 流年 -->
+        <div id="tab-yearly" class="tab-content hidden">
+            <div class="form-group" style="margin:12px 0">
+                <label class="form-label">選擇流年年份</label>
+                <select id="yearly-select" class="form-select" onchange="renderYearly()"></select>
             </div>
-            <div class="glass explain-card">
-                <h4>✨ 四化是什麼？</h4>
-                <p>四化就像是星星被「加持」了特殊能量：<br>
-                    <strong style="color:#2ed573">祿</strong>＝好運加倍、順順利利，就像拿到好牌<br>
-                    <strong style="color:#ff6b6b">權</strong>＝有權力、有掌控力，但也比較強勢<br>
-                    <strong style="color:#48dbfb">科</strong>＝有名氣、有貴人相助，聰明才智<br>
-                    <strong style="color:#ff4757">忌</strong>＝卡關、需要特別注意的地方，但不一定是壞事，有時候是因為太在乎所以容易鑽牛角尖
-                </p>
+            <div id="yearly-content"></div>
+        </div>
+
+        <!-- Tab: 流月 -->
+        <div id="tab-monthly" class="tab-content hidden">
+            <div style="display:flex;gap:8px;margin:12px 0">
+                <div class="form-group" style="flex:1">
+                    <label class="form-label">年份</label>
+                    <select id="monthly-year" class="form-select" onchange="updateMonthlyOptions()"></select>
+                </div>
+                <div class="form-group" style="flex:1">
+                    <label class="form-label">月份</label>
+                    <select id="monthly-month" class="form-select" onchange="renderMonthly()">
+                        <option value="1">正月</option>
+                        <option value="2">二月</option>
+                        <option value="3">三月</option>
+                        <option value="4">四月</option>
+                        <option value="5">五月</option>
+                        <option value="6">六月</option>
+                        <option value="7">七月</option>
+                        <option value="8">八月</option>
+                        <option value="9">九月</option>
+                        <option value="10">十月</option>
+                        <option value="11">冬月</option>
+                        <option value="12">臘月</option>
+                    </select>
+                </div>
+            </div>
+            <div id="monthly-content"></div>
+        </div>
+
+        <!-- Tab: 三方四正 -->
+        <div id="tab-relations" class="tab-content hidden">
+            <div class="form-group" style="margin:12px 0">
+                <label class="form-label">選擇宮位查看三方四正</label>
+                <select id="relations-palace" class="form-select" onchange="renderRelations()"></select>
+            </div>
+            <div id="relations-content"></div>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:16px">
+            <button class="btn-secondary" style="flex:1" onclick="saveChart()">
+                <span style="display:flex;align-items:center;justify-content:center;gap:6px">
+                    <i data-lucide="save" style="width:16px;height:16px"></i> 儲存紀錄
+                </span>
+            </button>
+            <button class="btn-secondary" style="flex:1" onclick="showView('view-form')">
+                <span style="display:flex;align-items:center;justify-content:center;gap:6px">
+                    <i data-lucide="rotate-ccw" style="width:16px;height:16px"></i> 重新排盤
+                </span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ========== 歷史紀錄 ========== -->
+    <div id="view-history" class="view">
+        <div class="glass" style="padding:20px">
+            <h2
+                style="font-family:var(--font-serif);font-size:1.1rem;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:8px">
+                <i data-lucide="scroll-text" style="width:20px;height:20px"></i> 歷史紀錄
+            </h2>
+            <div id="history-list">
+                <p style="text-align:center;color:var(--text-secondary);font-size:0.85rem;padding:30px 0">尚無紀錄</p>
             </div>
         </div>
+    </div>
+
+    <!-- ========== 關於 ========== -->
+    <div id="view-about" class="view">
+        <div class="glass explain-card">
+            <h4>🌟 什麼是紫微斗數？</h4>
+            <p>簡單來說，紫微斗數就像是你出生那一刻的「星空快照」。古人觀察天上星辰的排列，發展出這套命理系統。
+                <strong>它用十二個宮位來描述你人生的各個面向</strong>，像是你的個性、事業、感情、財運等等。每個宮位裡面會有不同的星星（我們叫「星曜」），這些星星的組合就決定了那個面向的特質。
+            </p>
+        </div>
+        <div class="glass explain-card">
+            <h4>📐 十二宮位是什麼？</h4>
+            <p>你可以把十二宮想像成人生的十二個舞台：<br>
+                <strong>命宮</strong>＝你這個人的核心個性<br>
+                <strong>兄弟宮</strong>＝跟兄弟姐妹、朋友的關係<br>
+                <strong>夫妻宮</strong>＝感情跟婚姻狀況<br>
+                <strong>子女宮</strong>＝跟小孩的緣分、桃花<br>
+                <strong>財帛宮</strong>＝賺錢的方式跟財運<br>
+                <strong>疾厄宮</strong>＝身體健康<br>
+                <strong>遷移宮</strong>＝出外運、人際關係<br>
+                <strong>交友宮</strong>＝朋友跟合作夥伴<br>
+                <strong>官祿宮</strong>＝工作跟事業<br>
+                <strong>田宅宮</strong>＝家庭跟房產<br>
+                <strong>福德宮</strong>＝精神層面、有沒有福氣<br>
+                <strong>父母宮</strong>＝跟長輩的關係、讀書運
+            </p>
+        </div>
+        <div class="glass explain-card">
+            <h4>✨ 四化是什麼？</h4>
+            <p>四化就像是星星被「加持」了特殊能量：<br>
+                <strong style="color:#2ed573">祿</strong>＝好運加倍、順順利利，就像拿到好牌<br>
+                <strong style="color:#ff6b6b">權</strong>＝有權力、有掌控力，但也比較強勢<br>
+                <strong style="color:#48dbfb">科</strong>＝有名氣、有貴人相助，聰明才智<br>
+                <strong style="color:#ff4757">忌</strong>＝卡關、需要特別注意的地方，但不一定是壞事，有時候是因為太在乎所以容易鑽牛角尖
+            </p>
+        </div>
+    </div>
     </div>
 
     <!-- 宮位詳情 Modal -->
@@ -1014,7 +1042,7 @@
         // 全域設定
         // ============================================================
         const LIFF_ID = "2008678090-t9dLJLeD"; // ← 請替換成您的 LIFF ID
-        const API_BASE = "https://zwds-api.vercel.app/"; // ← 部署 Vercel 後填入，例如 https://your-app.vercel.app
+        const API_BASE = "https://zwds-api.vercel.app"; // ← 移除尾部斜線
 
         // 使用者狀態
         const appState = {
@@ -1169,6 +1197,16 @@
             label.textContent = appState.useTST ? '✅ 啟用真太陽時校正' : '⬜ 停用真太陽時校正';
         }
 
+        function checkCustomLocation() {
+            const select = document.getElementById('birth-lotitude-select');
+            const customGroup = document.getElementById('custom-longitude-group');
+            if (select.value === 'custom') {
+                customGroup.style.display = 'block';
+            } else {
+                customGroup.style.display = 'none';
+            }
+        }
+
         // ============================================================
         // 十二時辰名稱對照
         // ============================================================
@@ -1181,7 +1219,16 @@
             const dateStr = document.getElementById('birth-date').value;
             let hour = parseInt(document.getElementById('birth-hour').value);
             const gender = document.getElementById('birth-gender').value;
-            const longitude = parseFloat(document.getElementById('birth-longitude').value) || 121.5;
+
+            // 取得經度
+            let longitude = 121.5;
+            const locSelect = document.getElementById('birth-lotitude-select');
+            if (locSelect && locSelect.value !== 'custom') {
+                longitude = parseFloat(locSelect.value);
+            } else {
+                const manualInput = parseFloat(document.getElementById('birth-longitude').value);
+                if (!isNaN(manualInput)) longitude = manualInput;
+            }
 
             if (!dateStr) { showToast('請填寫出生日期'); return; }
 
@@ -1361,87 +1408,99 @@
 
             // 命宮
             const ming = palaces.find(p => p.name === '命宮');
-            html += explainCard('🧙 命宮 — 你的核心個性', getPersonalityExplain(ming.majorStars, ming));
+            if (ming) html += explainCard('🧙 命宮 — 你的核心個性', getPersonalityExplain(ming.majorStars || [], ming));
 
             // 官祿宮
             const career = palaces.find(p => p.name === '官祿宮');
-            html += explainCard('💼 官祿宮 — 適合的工作', getCareerExplain(career.majorStars, career));
+            if (career) html += explainCard('💼 官祿宮 — 適合的工作', getCareerExplain(career.majorStars || [], career));
 
             // 財帛宮
             const wealth = palaces.find(p => p.name === '財帛宮');
-            html += explainCard('💰 財帛宮 — 財運如何', getWealthExplain(wealth.majorStars, wealth));
+            if (wealth) html += explainCard('💰 財帛宮 — 財運如何', getWealthExplain(wealth.majorStars || [], wealth));
 
             // 夫妻宮
             const spouse = palaces.find(p => p.name === '夫妻宮');
-            html += explainCard('💕 夫妻宮 — 感情與婚姻', getSpouseExplain(spouse.majorStars, spouse));
+            if (spouse) html += explainCard('💕 夫妻宮 — 感情與婚姻', getSpouseExplain(spouse.majorStars || [], spouse));
 
             // 福德宮 (新增)
             const fortune = palaces.find(p => p.name === '福德宮');
-            html += explainCard('🧘 福德宮 — 精神與福氣', getFortuneExplain(fortune.majorStars, fortune));
+            if (fortune) html += explainCard('🧘 福德宮 — 精神與福氣', getFortuneExplain(fortune.majorStars || [], fortune));
 
             // 疾厄宮 (新增)
             const health = palaces.find(p => p.name === '疾厄宮');
-            html += explainCard('🏥 疾厄宮 — 健康注意', getHealthExplain(health.majorStars, health));
+            if (health) html += explainCard('🏥 疾厄宮 — 健康注意', getHealthExplain(health.majorStars || [], health));
 
-            // 遷移宮 (新增)
+            // 遷移宮
             const travel = palaces.find(p => p.name === '遷移宮');
-            html += explainCard('✈️ 遷移宮 — 外出與人際', getGeneralPalaceExplain(travel, '遷移宮代表你在外面的際遇、出遠門的運勢，以及給人的第一印象。', {
-                '紫微': '在外有貴人，受人敬重', '天機': '適合在外地發展，變動多', '太陽': '在外活躍，喜歡交際',
-                '武曲': '在外奔波勞碌求財', '天同': '出外有福氣，少操心', '廉貞': '在外交際應酬多',
-                '天府': '出外運勢穩定，有貴人相助', '太陰': '在外人緣好，適合夜間活動', '貪狼': '在外桃花多，交遊廣闊',
-                '巨門': '在外易有口舌是非', '天相': '在外有人緣，常有人幫忙', '天梁': '在外有長輩緣，逢凶化吉',
-                '七殺': '在外奔波，靠自己打天下', '破軍': '在外變動大，可能常搬家或換環境'
-            }));
+            if (travel) {
+                html += explainCard('✈️ 遷移宮 — 外出與人際', getGeneralPalaceExplain(travel, '遷移宮代表你在外面的際遇、出遠門的運勢，以及給人的第一印象。', {
+                    '紫微': '在外有貴人，受人敬重', '天機': '適合在外地發展，變動多', '太陽': '在外活躍，喜歡交際',
+                    '武曲': '在外奔波勞碌求財', '天同': '出外有福氣，少操心', '廉貞': '在外交際應酬多',
+                    '天府': '出外運勢穩定，有貴人相助', '太陰': '在外人緣好，適合夜間活動', '貪狼': '在外桃花多，交遊廣闊',
+                    '巨門': '在外易有口舌是非', '天相': '在外有人緣，常有人幫忙', '天梁': '在外有長輩緣，逢凶化吉',
+                    '七殺': '在外奔波，靠自己打天下', '破軍': '在外變動大，可能常搬家或換環境'
+                }));
+            }
 
-            // 田宅宮 (新增)
+            // 田宅宮
             const property = palaces.find(p => p.name === '田宅宮');
-            html += explainCard('🏠 田宅宮 — 居住與不動產', getGeneralPalaceExplain(property, '田宅宮代表你的居住環境、不動產運勢，以及家庭氣氛。', {
-                '紫微': '住家環境高雅，可能住在高樓或地勢高處', '天機': '常搬家或更動家中擺設', '太陽': '光線充足，住家環境明亮',
-                '武曲': '靠近金融機構或軍警單位', '天同': '住家舒適，有水或低窪地', '廉貞': '家中電器多，或附近有變電所',
-                '天府': '住家寬敞，地段好', '太陰': '住家光線較暗，或靠近水邊', '貪狼': '住家附近熱鬧或有娛樂場所',
-                '巨門': '附近有水溝或巨型建築，易有噪音', '天相': '住家環境優雅，鄰居和善', '天梁': '住家附近有醫院、寺廟或老樹',
-                '七殺': '住家附近環境雜亂或有警局', '破軍': '住家老舊或雜亂，可能漏水'
-            }));
+            if (property) {
+                html += explainCard('🏠 田宅宮 — 居住與不動產', getGeneralPalaceExplain(property, '田宅宮代表你的居住環境、不動產運勢，以及家庭氣氛。', {
+                    '紫微': '住家環境高雅，可能住在高樓或地勢高處', '天機': '常搬家或更動家中擺設', '太陽': '光線充足，住家環境明亮',
+                    '武曲': '靠近金融機構或軍警單位', '天同': '住家舒適，有水或低窪地', '廉貞': '家中電器多，或附近有變電所',
+                    '天府': '住家寬敞，地段好', '太陰': '住家光線較暗，或靠近水邊', '貪狼': '住家附近熱鬧或有娛樂場所',
+                    '巨門': '附近有水溝或巨型建築，易有噪音', '天相': '住家環境優雅，鄰居和善', '天梁': '住家附近有醫院、寺廟或老樹',
+                    '七殺': '住家附近環境雜亂或有警局', '破軍': '住家老舊或雜亂，可能漏水'
+                }));
+            }
 
-            // 子女宮 (新增)
+            // 子女宮
             const children = palaces.find(p => p.name === '子女宮');
-            html += explainCard('👶 子女宮 — 子女與桃花', getGeneralPalaceExplain(children, '子女宮除了看子女狀況，也代表你的桃花運（性生活）以及與晚輩的關係。', {
-                '紫微': '子女優秀，有領導潛力', '天機': '子女聰明活潑，好動', '太陽': '子女開朗，活潑好動',
-                '武曲': '子女個性剛強，較嚴肅', '天同': '子女貼心乖巧，愛撒嬌', '廉貞': '子女個性強硬，注意親子溝通',
-                '天府': '子女穩重，有責任感', '太陰': '子女溫柔，有藝術天分', '貪狼': '子女聰明，慾望較強',
-                '巨門': '子女口才好，但容易有代溝', '天相': '子女敦厚，重外表', '天梁': '子女早熟，孝順',
-                '七殺': '子女個性叛逆，難管教', '破軍': '子女破壞力強，好動'
-            }));
+            if (children) {
+                html += explainCard('👶 子女宮 — 子女與桃花', getGeneralPalaceExplain(children, '子女宮除了看子女狀況，也代表你的桃花運（性生活）以及與晚輩的關係。', {
+                    '紫微': '子女優秀，有領導潛力', '天機': '子女聰明活潑，好動', '太陽': '子女開朗，活潑好動',
+                    '武曲': '子女個性剛強，較嚴肅', '天同': '子女貼心乖巧，愛撒嬌', '廉貞': '子女個性強硬，注意親子溝通',
+                    '天府': '子女穩重，有責任感', '太陰': '子女溫柔，有藝術天分', '貪狼': '子女聰明，慾望較強',
+                    '巨門': '子女口才好，但容易有代溝', '天相': '子女敦厚，重外表', '天梁': '子女早熟，孝順',
+                    '七殺': '子女個性叛逆，難管教', '破軍': '子女破壞力強，好動'
+                }));
+            }
 
-            // 父母宮 (新增)
+            // 父母宮
             const parents = palaces.find(p => p.name === '父母宮');
-            html += explainCard('👴 父母宮 — 長輩與相貌', getGeneralPalaceExplain(parents, '父母宮代表與父母的緣分、長輩提攜運，也代表你的相貌氣質。', {
-                '紫微': '父母有權威，受人敬重', '天機': '父母善良這聰明，但較操勞', '太陽': '父親較強勢或無緣',
-                '武曲': '父母個性剛毅，說話嚴肅', '天同': '父母慈祥，感情好', '廉貞': '與父母緣分較薄，或有代溝',
-                '天府': '父母慈祥，雖然嘮叨但愛護子女', '太陰': '母親較強勢或無緣', '貪狼': '父母感情複雜或離異',
-                '巨門': '與父母易有口角', '天相': '父母開明，重打扮', '天梁': '父母長壽，有威嚴',
-                '七殺': '父母管教嚴格，早年離家', '破軍': '與父母緣分薄，早年離家'
-            }));
+            if (parents) {
+                html += explainCard('👴 父母宮 — 長輩與相貌', getGeneralPalaceExplain(parents, '父母宮代表與父母的緣分、長輩提攜運，也代表你的相貌氣質。', {
+                    '紫微': '父母有權威，受人敬重', '天機': '父母善良這聰明，但較操勞', '太陽': '父親較強勢或無緣',
+                    '武曲': '父母個性剛毅，說話嚴肅', '天同': '父母慈祥，感情好', '廉貞': '與父母緣分較薄，或有代溝',
+                    '天府': '父母慈祥，雖然嘮叨但愛護子女', '太陰': '母親較強勢或無緣', '貪狼': '父母感情複雜或離異',
+                    '巨門': '與父母易有口角', '天相': '父母開明，重打扮', '天梁': '父母長壽，有威嚴',
+                    '七殺': '父母管教嚴格，早年離家', '破軍': '與父母緣分薄，早年離家'
+                }));
+            }
 
-            // 僕役宮 (新增)
+            // 僕役宮
             const friends = palaces.find(p => p.name === '僕役宮') || palaces.find(p => p.name === '交友宮');
-            if (friends) html += explainCard('🤝 僕役宮 — 朋友與人脈', getGeneralPalaceExplain(friends, '僕役宮（交友宮）看你與朋友、同事、下屬的關係。', {
-                '紫微': '結交有地位的朋友，能得助益', '天機': '朋友多但流動快', '太陽': '朋友熱情，喜歡助人',
-                '武曲': '朋友多為剛毅之人，或有金錢往來', '天同': '朋友多為吃喝玩樂伴侶', '廉貞': '朋友多樣化，注意損友',
-                '天府': '朋友穩重，值得信賴', '太陰': '異性朋友多', '貪狼': '酒肉朋友多，桃花旺',
-                '巨門': '朋友間易有是非口舌', '天相': '朋友多有正義感', '天梁': '朋友多為長者或專業人士',
-                '七殺': '朋友個性衝動，易有衝突', '破軍': '朋友三教九流都有，小心被拖累'
-            }));
+            if (friends) {
+                html += explainCard('🤝 僕役宮 — 朋友與人脈', getGeneralPalaceExplain(friends, '僕役宮（交友宮）看你與朋友、同事、下屬的關係。', {
+                    '紫微': '結交有地位的朋友，能得助益', '天機': '朋友多但流動快', '太陽': '朋友熱情，喜歡助人',
+                    '武曲': '朋友多為剛毅之人，或有金錢往來', '天同': '朋友多為吃喝玩樂伴侶', '廉貞': '朋友多樣化，注意損友',
+                    '天府': '朋友穩重，值得信賴', '太陰': '異性朋友多', '貪狼': '酒肉朋友多，桃花旺',
+                    '巨門': '朋友間易有是非口舌', '天相': '朋友多有正義感', '天梁': '朋友多為長者或專業人士',
+                    '七殺': '朋友個性衝動，易有衝突', '破軍': '朋友三教九流都有，小心被拖累'
+                }));
+            }
 
-            // 兄弟宮 (新增)
+            // 兄弟宮
             const siblings = palaces.find(p => p.name === '兄弟宮');
-            html += explainCard('👯 兄弟宮 — 手足與積蓄', getGeneralPalaceExplain(siblings, '兄弟宮看手足情分，在現代也代表你的現金庫（財庫）。', {
-                '紫微': '兄弟姊妹中有成就高者', '天機': '兄弟姊妹聰明，但可能各奔東西', '太陽': '兄弟感情不錯，會互助',
-                '武曲': '兄弟少，或個性剛硬不合', '天同': '兄弟感情好，常聯絡', '廉貞': '兄弟間有競爭或不合',
-                '天府': '兄弟姊妹穩重可靠', '太陰': '跟姊妹感情較好', '貪狼': '兄弟姊妹各有才藝',
-                '巨門': '手足間容易有爭執', '天相': '兄弟姊妹感情好、互相幫忙', '天梁': '兄弟中有照顧你的人',
-                '七殺': '兄弟姊妹做事果斷、獨立', '破軍': '手足緣分較淡，各奔東西'
-            }));
+            if (siblings) {
+                html += explainCard('👯 兄弟宮 — 手足與積蓄', getGeneralPalaceExplain(siblings, '兄弟宮看手足情分，在現代也代表你的現金庫（財庫）。', {
+                    '紫微': '兄弟姊妹中有成就高者', '天機': '兄弟姊妹聰明，但可能各奔東西', '太陽': '兄弟感情不錯，會互助',
+                    '武曲': '兄弟少，或個性剛硬不合', '天同': '兄弟感情好，常聯絡', '廉貞': '兄弟間有競爭或不合',
+                    '天府': '兄弟姊妹穩重可靠', '太陰': '跟姊妹感情較好', '貪狼': '兄弟姊妹各有才藝',
+                    '巨門': '手足間容易有爭執', '天相': '兄弟姊妹感情好、互相幫忙', '天梁': '兄弟中有照顧你的人',
+                    '七殺': '兄弟姊妹做事果斷、獨立', '破軍': '手足緣分較淡，各奔東西'
+                }));
+            }
 
             // 四化特別提醒
             html += renderHuaSummary(palaces);
