@@ -958,8 +958,8 @@
         // ============================================================
         // 全域設定
         // ============================================================
-        const LIFF_ID = "YOUR_LIFF_ID"; // ← 請替換成您的 LIFF ID
-        const API_BASE = ""; // ← 部署 Vercel 後填入，例如 https://your-app.vercel.app
+        const LIFF_ID = "Y2008678090-t9dLJLeD"; // ← 請替換成您的 LIFF ID
+        const API_BASE = "https://zwds-api.vercel.app/"; // ← 部署 Vercel 後填入，例如 https://your-app.vercel.app
 
         // 使用者狀態
         const appState = {
@@ -1463,26 +1463,67 @@
             if (!astro) return;
 
             try {
-                const horoscope = astro.horoscope(year, 1, 1, 0);
-                if (horoscope && horoscope.yearly) {
-                    const y = horoscope.yearly;
-                    let html = `<div class="glass" style="padding:16px;margin-bottom:12px">
+                // 正確用法：horoscope(dateString, timeIndex)
+                const horoscope = astro.horoscope(`${year}-1-1`, 0);
+                const y = horoscope.yearly;
+                const d = horoscope.decadal;
+
+                let html = `<div class="glass" style="padding:16px;margin-bottom:12px">
                 <h4 style="font-family:var(--font-serif);color:var(--gold);margin-bottom:8px">🐉 ${year}年 流年運勢</h4>
                 <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.7">
                     流年就像是每一年的「年度主題曲」。不同年份會啟動你命盤中不同的能量，讓你在那一年的某些方面比較順或比較需要注意。
                 </p>
             </div>`;
 
-                    // 嘗試取得流年資訊
-                    if (y.palpiodName) {
-                        html += `<div class="glass fortune-period"><div class="period-title">流年宮位：${y.palpiodName}</div></div>`;
-                    }
-                    container.innerHTML = html;
-                } else {
-                    container.innerHTML = '<div class="glass" style="padding:16px"><p style="color:var(--text-secondary);font-size:0.85rem">此年份的流年資訊暫時無法取得，請嘗試其他年份。</p></div>';
+                // 大限資訊
+                if (d) {
+                    html += `<div class="glass fortune-period">
+                    <div class="period-title">📅 所在大限：${d.heavenlyStem || ''}${d.earthlyBranch || ''}</div>
+                    <div class="period-detail">大限四化：${(d.mutagen || []).join('、') || '無'}</div>
+                    <div class="period-detail">大限十二宮排列：${(d.palaceNames || []).join('→') || '—'}</div>
+                </div>`;
                 }
+
+                // 流年資訊
+                if (y) {
+                    html += `<div class="glass fortune-period">
+                    <div class="period-title">🌟 ${year}年 流年干支：${y.heavenlyStem || ''}${y.earthlyBranch || ''}</div>
+                    <div class="period-detail">流年四化：${(y.mutagen || []).join('、') || '無'}</div>
+                    <div class="period-detail">流年十二宮排列：${(y.palaceNames || []).join('→') || '—'}</div>
+                </div>`;
+
+                    // 流耀
+                    if (y.yearlyDecStar) {
+                        const jq = (y.yearlyDecStar.jiangqian12 || []).join('、');
+                        const sq = (y.yearlyDecStar.suiqian12 || []).join('、');
+                        if (jq || sq) {
+                            html += `<div class="glass fortune-period">
+                            <div class="period-title">✨ 流年星曜</div>
+                            ${jq ? `<div class="period-detail">將前十二星：${jq}</div>` : ''}
+                            ${sq ? `<div class="period-detail">歲前十二星：${sq}</div>` : ''}
+                        </div>`;
+                        }
+                    }
+                }
+
+                // 流年小限
+                if (horoscope.age) {
+                    html += `<div class="glass fortune-period">
+                    <div class="period-title">🎂 虛歲：${horoscope.age.nominalAge || '—'} 歲</div>
+                </div>`;
+                }
+
+                html += `<div class="glass explain-card" style="margin-top:12px">
+                <p style="font-size:0.82rem;line-height:1.7">
+                    💡 <strong>怎麼看流年？</strong><br>
+                    重點看「流年四化」落在哪些宮位。化祿代表有利、化權代表掌控力強、化科代表貴人運、化忌代表阻礙。例如化祿落在財帛宮就表示今年財運不錯。
+                </p>
+            </div>`;
+
+                container.innerHTML = html;
             } catch (e) {
-                container.innerHTML = '<div class="glass" style="padding:16px"><p style="color:var(--text-secondary);font-size:0.85rem">流年分析功能載入中，請稍後再試。</p></div>';
+                console.error('流年分析錯誤:', e);
+                container.innerHTML = `<div class="glass" style="padding:16px"><p style="color:var(--text-secondary);font-size:0.85rem">流年分析功能載入失敗：${e.message || '未知錯誤'}。請嘗試其他年份。</p></div>`;
             }
         }
 
@@ -1506,13 +1547,42 @@
             if (!astro) return;
 
             try {
-                const horoscope = astro.horoscope(year, month, 1, 0);
-                let html = `<div class="glass" style="padding:16px">
+                // 正確用法：horoscope(dateString, timeIndex)
+                const horoscope = astro.horoscope(`${year}-${month}-1`, 0);
+                const m = horoscope.monthly;
+                const y = horoscope.yearly;
+
+                let html = `<div class="glass" style="padding:16px;margin-bottom:12px">
             <h4 style="font-family:var(--font-serif);color:var(--gold);margin-bottom:8px">📆 ${year}年${month}月 流月分析</h4>
             <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.7">
                 流月是把流年再細分到每個月。它可以幫助你了解每個月適合做什麼、要避開什麼。尤其是做重大決定（換工作、結婚、投資）時可以參考。
             </p>
         </div>`;
+
+                // 流年概覽（作為背景）
+                if (y) {
+                    html += `<div class="glass fortune-period">
+                    <div class="period-title">🌟 ${year}年流年：${y.heavenlyStem || ''}${y.earthlyBranch || ''}</div>
+                    <div class="period-detail">流年四化：${(y.mutagen || []).join('、') || '無'}</div>
+                </div>`;
+                }
+
+                // 流月詳情
+                if (m) {
+                    html += `<div class="glass fortune-period">
+                    <div class="period-title">📅 ${month}月流月干支：${m.heavenlyStem || ''}${m.earthlyBranch || ''}</div>
+                    <div class="period-detail">流月四化：${(m.mutagen || []).join('、') || '無'}</div>
+                    <div class="period-detail">流月十二宮排列：${(m.palaceNames || []).join('→') || '—'}</div>
+                </div>`;
+                }
+
+                html += `<div class="glass explain-card" style="margin-top:12px">
+                <p style="font-size:0.82rem;line-height:1.7">
+                    💡 <strong>怎麼看流月？</strong><br>
+                    流月四化就像「月度提示」。看流月化祿在哪宮就是這個月的機會，化忌在哪宮就要特別注意。配合流年一起看更準確。
+                </p>
+            </div>`;
+
                 container.innerHTML = html;
             } catch (e) {
                 container.innerHTML = '<div class="glass" style="padding:16px"><p style="color:var(--text-secondary);font-size:0.85rem">流月資訊載入中，請稍後再試。</p></div>';
