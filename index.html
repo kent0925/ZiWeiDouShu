@@ -2046,7 +2046,19 @@
 
             try {
                 // 正確用法：horoscope(dateString, timeIndex)
-                const horoscope = astro.horoscope(`${year}-1-1`, 0);
+                let horoscope;
+                try {
+                    horoscope = astro.horoscope(`${year}-1-1`, 0);
+                } catch (err) {
+                    console.warn('流年計算失敗:', err);
+                    container.innerHTML = `<div class="glass" style="padding:16px"><p style="color:var(--text-secondary);font-size:0.85rem">無法計算 ${year} 年流年運勢，可能是日期超出範圍。</p></div>`;
+                    return;
+                }
+
+                if (!horoscope) {
+                    throw new Error('無法取得流年資料');
+                }
+
                 const y = horoscope.yearly;
                 const d = horoscope.decadal;
 
@@ -2107,6 +2119,7 @@
                 console.error('流年分析錯誤:', e);
                 container.innerHTML = `<div class="glass" style="padding:16px"><p style="color:var(--text-secondary);font-size:0.85rem">流年分析功能載入失敗：${e.message || '未知錯誤'}。請嘗試其他年份。</p></div>`;
             }
+
         }
 
         // ---------- 流月分析 ----------
