@@ -1906,8 +1906,9 @@
             try {
                 // 正確用法：horoscope(dateString, timeIndex)
                 let horoscope;
+                const pad = n => n.toString().padStart(2, '0');
                 try {
-                    horoscope = astro.horoscope(`${year}-1-1`, 0);
+                    horoscope = astro.horoscope(`${year}-${pad(1)}-${pad(1)}`, 0);
                 } catch (err) {
                     console.warn('流年計算失敗:', err);
                     container.innerHTML = `<div class="glass" style="padding:16px"><p style="color:var(--text-secondary);font-size:0.85rem">無法計算 ${year} 年流年運勢，可能是日期超出範圍。</p></div>`;
@@ -2019,8 +2020,8 @@
             if (!astro) return;
 
             try {
-                // horoscope(date, timeIndex)
-                const horoscope = astro.horoscope(`${year}-${month}-1`, 0);
+                const pad = n => n.toString().padStart(2, '0');
+                const horoscope = astro.horoscope(`${year}-${pad(month)}-${pad(1)}`, 0);
                 const m = horoscope.monthly;
 
                 let html = `<div class="glass" style="padding:16px;margin-bottom:12px">
