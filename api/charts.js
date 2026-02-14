@@ -8,7 +8,13 @@ import Redis from 'ioredis';
 // 初始化 Redis 客戶端
 let redisClient = null;
 if (process.env.KV_URL) {
-    redisClient = new Redis(process.env.KV_URL);
+    const url = process.env.KV_URL.startsWith('redis://')
+        ? process.env.KV_URL.replace('redis://', 'rediss://')
+        : process.env.KV_URL;
+
+    redisClient = new Redis(url, {
+        tls: { rejectUnauthorized: false }
+    });
 }
 
 export default async function handler(req, res) {
