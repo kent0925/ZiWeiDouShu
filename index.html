@@ -1930,22 +1930,41 @@
                 </p>
             </div>`;
 
-                // Helper for detailed analysis in Yearly
-                const getStarText = (stars, type) => {
+                // Helper for detailed analysis in Yearly (Enhanced with Borrowed Star logic)
+                const getStarText = (palace, type) => {
+                    if (!palace) return null;
                     const starContent = window.STAR_CONTENT || {};
                     const starsData = starContent.stars || {};
+
+                    let stars = palace.majorStars || [];
+                    let isBorrowed = false;
+
+                    // 若本宮無主星，借對宮主星
+                    if (stars.length === 0) {
+                        const idx = palace.index;
+                        if (typeof idx === 'number' && astro.palaces) {
+                            const opIdx = (idx + 6) % 12;
+                            const opPalace = astro.palaces[opIdx];
+                            if (opPalace) {
+                                stars = opPalace.majorStars || [];
+                                isBorrowed = true;
+                            }
+                        }
+                    }
+
                     const s = (stars || []).find(x => x.name && starsData[x.name]);
                     if (!s) return null;
+
                     const info = starsData[s.name] || {};
-                    return `<strong>${s.name}</strong>：${info[type] || info.core}`;
+                    const prefix = isBorrowed ? '<span>(借)</span> ' : '';
+                    return `${prefix}<strong>${s.name}</strong>：${info[type] || info.core}`;
                 };
 
                 // 大限分析 (詳細)
                 if (d) {
-                    const stars = d.majorStars || [];
-                    const careerText = getStarText(stars, 'career') || '大限事業運需參考整體格局。';
-                    const loveText = getStarText(stars, 'love') || '大限感情運需參考整體格局。';
-                    const wealthText = getStarText(stars, 'wealth') || '大限財運需參考整體格局。';
+                    const careerText = getStarText(d, 'career') || '大限事業運平穩，可多充實自己。';
+                    const loveText = getStarText(d, 'love') || '大限感情運平淡，宜順其自然。';
+                    const wealthText = getStarText(d, 'wealth') || '大限財運保守，建議儲蓄為主。';
 
                     html += `<div class="glass fortune-period">
                         <div class="period-title">📅 本大限 (${d.heavenlyStem}${d.earthlyBranch}) 重點</div>
@@ -1960,10 +1979,9 @@
 
                 // 流年分析 (詳細)
                 if (y) {
-                    const stars = y.majorStars || [];
-                    const careerText = getStarText(stars, 'career') || '流年事業運平穩，保守為宜。';
-                    const loveText = getStarText(stars, 'love') || '流年感情運持平，順其自然。';
-                    const wealthText = getStarText(stars, 'wealth') || '流年財運尚可，注意收支平衡。';
+                    const careerText = getStarText(y, 'career') || '流年事業運平穩，按部就班即可。';
+                    const loveText = getStarText(y, 'love') || '流年感情運平淡，維持現狀為佳。';
+                    const wealthText = getStarText(y, 'wealth') || '流年財運保守，注意收支平衡。';
 
                     html += `<div class="glass fortune-period">
                         <div class="period-title">🌟 ${year}年 (${y.heavenlyStem}${y.earthlyBranch}) 運勢</div>
@@ -2034,20 +2052,38 @@
         </div>`;
 
                 if (m) {
-                    // Helper to get text
-                    const getStarText = (stars, type) => {
+                    // Helper for detailed analysis in Monthly (Enhanced with Borrowed Star logic)
+                    const getStarText = (palace, type) => {
+                        if (!palace) return null;
                         const starContent = window.STAR_CONTENT || {};
                         const starsData = starContent.stars || {};
+
+                        let stars = palace.majorStars || [];
+                        let isBorrowed = false;
+
+                        // 若本宮無主星，借對宮主星
+                        if (stars.length === 0) {
+                            const idx = palace.index;
+                            if (typeof idx === 'number' && astro.palaces) {
+                                const opIdx = (idx + 6) % 12;
+                                const opPalace = astro.palaces[opIdx];
+                                if (opPalace) {
+                                    stars = opPalace.majorStars || [];
+                                    isBorrowed = true;
+                                }
+                            }
+                        }
+
                         const s = (stars || []).find(x => x.name && starsData[x.name]);
                         if (!s) return null;
                         const info = starsData[s.name] || {};
-                        return `<strong>${s.name}</strong>：${info[type] || info.core}`;
+                        const prefix = isBorrowed ? '<span>(借)</span> ' : '';
+                        return `${prefix}<strong>${s.name}</strong>：${info[type] || info.core}`;
                     };
 
-                    const stars = m.majorStars || [];
-                    const career = getStarText(stars, 'career') || '本月事業運勢平穩。';
-                    const love = getStarText(stars, 'love') || '本月感情運勢順其自然。';
-                    const wealth = getStarText(stars, 'wealth') || '本月財運需保守理財。';
+                    const career = getStarText(m, 'career') || '本月事業運平穩，可多充實自己。';
+                    const love = getStarText(m, 'love') || '本月感情運平淡，宜順其自然。';
+                    const wealth = getStarText(m, 'wealth') || '本月財運保守，建議儲蓄為主。';
 
                     html += `<div class="glass fortune-period">
                 <div class="period-title">📅 本月運勢重點 (${m.heavenlyStem}${m.earthlyBranch})</div>
@@ -2157,7 +2193,7 @@
             // Palace explanation
             const palaceExplain = palacesData[palace.name] || '';
             html += `<div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.6">
-                <div>${palace.heavenlyStemOfPalace}${palace.earthlyBranchOfPalace}</div>
+                <div>${palace.heavenlyStem}${palace.earthlyBranch}</div>
                 ${palaceExplain ? `<div style="margin-top:4px">${palaceExplain}</div>` : ''}
             </div>`;
 
