@@ -2,20 +2,7 @@
 // 命盤紀錄 API — /api/charts
 // 支援 Vercel KV (REST) 與標準 Redis 連線
 // ============================================================
-import { kv } from '@vercel/kv';
-import Redis from 'ioredis';
-
-// 初始化 Redis 客戶端
-let redisClient = null;
-if (process.env.KV_URL) {
-    const url = process.env.KV_URL.startsWith('redis://')
-        ? process.env.KV_URL.replace('redis://', 'rediss://')
-        : process.env.KV_URL;
-
-    redisClient = new Redis(url, {
-        tls: { rejectUnauthorized: false }
-    });
-}
+import { db, checkConfig } from './_lib/redis.js';
 
 export default async function handler(req, res) {
     // 處理 CORS 預檢請求
@@ -27,26 +14,11 @@ export default async function handler(req, res) {
         return res.status(200).end();
     }
 
-    if (!process.env.KV_REST_API_URL && !process.env.KV_URL) {
+    if (!checkConfig()) {
         return res.status(500).json({ error: '環境變數 KV_REST_API_URL 或 KV_URL 未設定。請確認資料庫連結。' });
     }
 
-    // 統一的資料存取介面
-    const db = {
-        get: async (key) => {
-            if (redisClient) {
-                const data = await redisClient.get(key);
-                return data ? JSON.parse(data) : null;
-            }
-            return await kv.get(key);
-        },
-        set: async (key, value) => {
-            if (redisClient) {
-                return await redisClient.set(key, JSON.stringify(value));
-            }
-            return await kv.set(key, value);
-        }
-    };
+    // db 物件已由 shared module 提供
 
     try {
         if (req.method === 'GET') {

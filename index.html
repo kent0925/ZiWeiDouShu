@@ -370,12 +370,21 @@
         .chart-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, auto);
             gap: 2px;
             margin: 16px 0;
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
             overflow: hidden;
             background: var(--border);
+        }
+
+        .chart-center-info {
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
         }
 
         .palace-cell {
